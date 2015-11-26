@@ -1,0 +1,51 @@
+Simple Trading System
+=====================
+
+This was written purely as a programming exercise. This system is NOT intended to be traded.
+All results are simulated and would not be achievable in practice. Trading this system is NOT
+likely to prove profitable and I accept no responsibility for any losses that may occur.
+
+This system was developed using Java7 and MySql (MariaDB) 5.5.
+
+The system uses two moving average crossovers to generate signals. (An n-day moving average
+is simply the mean of the prices over the previous n days). A buy signal occurs when the
+"faster" moving average, i.e. the one with the shorter period, crosses over the "slower"
+moving average, i.e. the one with the longer period. Similarly, a sell signal occurs when
+the faster moving average crosses under the slower moving average.
+
+When a buy signal occurs, a long position is opened in the instrument whose trade we are
+simulating; this could be a stock, commodity future, investment fund and so on. When
+a sell signal occurs, a short position is opened in the instrument. Any positions which
+were already open due to an earlier signal are closed.
+
+To prevent losses getting out of hand, a trailing stop loss is employed. This causes a
+position to be closed when the price of the instrument moves too far in the wrong direction.
+The stop loss is based on the average true range of the instrument; this is the mean of
+the difference between the high and low price on each trading day. A multiple of this
+value is subtracted from the day's low when opening a long position. If the price falls
+below this level, the position will be closed. This prevents excessive losses in the
+event the trade is not initially successful. This value is recalculated every day and,
+if this results in a higher value, the stop loss level is raised to this value. This
+allows some of the profits from a successful trade to be "locked in", while still
+leaving room for further profits. The disadvantage is that a significant proportion
+of the profits are left on the table when the trade eventually closed, as this will be
+a considerable distance below the high point of the move in price.
+
+The trailing stop loss is very similar for a short position, except that the average true
+range is added to the daily high for the instrument, instead of being subtracted from
+the daily low.
+
+The core of the system is in processor/Processor.java
+
+All the parameters of the system may be configured; this is achieved by modifying the
+appropriate values in the constants folder.
+
+Simple and exponential moving averages are provided. Other types may be added by subclassing
+MovingAverage, which is found in the averages folder.
+
+The criteria for creating buy and sell signals may be altered by editing
+critera/MovingAverageCritera.java
+
+A MySql schema and sample data is provided in simple.sql. The loader/OhlcvLoader.java program
+is provided for loading arbitrary data; the ixic.ohlcv file (which was used to create simple.sql)
+shows the format required.
